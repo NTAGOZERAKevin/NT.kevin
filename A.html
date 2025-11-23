@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden; /* ✅ disables scrollbars on the page */
+  height: 100%;
+}
+
+  .chat-container {
+  width: 100%;
+  height: 100%;
+  display: flex;  
+  flex-direction: column;
+   background-color:rgba(1, 1, 25, 0.85) ;
+  justify-content: space-between;
+  overflow: hidden; /* Prevents outer scroll */
+  box-shadow: 0 0 15px rgba(255, 166, 0, 0.3);
+  box-sizing: border-box;
+
+}
+
+    .chat-header {
+      background-color: #000000f9;
+      padding: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .header-center {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .ai-icon {
+      width: 28px;
+      height: 28px;
+      object-fit: contain;
+    }
+
+    .chat-header h2 {
+      font-size: 20px;
+      color: #ffb300;
+      margin: 0;
+    }
+
+    .done-btn {
+      position: absolute;
+      right: 15px;
+      top: 15px;
+      background-color: #ffb300;
+      color: #0a0a0a;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 13px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    .done-btn:hover {
+      background-color: #ffcc33;
+    }
+
+
+
+  #chat-box {
+  flex: 1;
+  padding: 15px;
+  overflow-y: auto; /* ✅ allows internal scroll */
+  scrollbar-width: none; /* Firefox */
+}
+
+#chat-box::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}
+
+
+  
+    .chat-logo {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 30px 0;
+    }
+
+    .chat-logo img {
+      width: 150px;
+      height: 150px;
+      object-fit: contain;
+      margin-bottom: 10px;
+    }
+
+    .chat-logo h2 {
+      font-size: 22px;
+      color: #ffb300;
+      margin: 0;
+    }
+
+    .user-message,
+    .bot-message {
+      margin: 8px 0;
+      padding: 10px 14px;
+      border-radius: 12px;
+      display: inline-block;
+      word-wrap: break-word;
+      max-width: 75%;
+      animation: fadeIn 0.3s ease-in;
+    }
+
+    .user-message {
+      background-color: #da8d36;
+      color: white;
+      align-self: flex-end;
+      text-align: right;
+    }
+
+    .bot-message {
+      background-color: #1f1f1f;
+      color: #eee;
+      align-self: flex-start;
+      text-align: left;
+    }
+
+    .typing-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin: 8px 0;
+      padding: 10px 14px;
+      border-radius: 12px;
+      width: fit-content;
+      animation: fadeIn 0.3s ease-in;
+    }
+
+    .typing-indicator span {
+      width: 6px;
+      height: 6px;
+      background-color: #ffb300;
+      border-radius: 50%;
+      animation: bounce 1.4s infinite ease-in-out;
+    }
+
+    .typing-indicator span:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .typing-indicator span:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes bounce {
+      0%, 80%, 100% {
+        transform: scale(0.8);
+        opacity: 0.3;
+      }
+      40% {
+        transform: scale(1.4);
+        opacity: 1;
+      }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .suggestions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px;
+      background-color: #0e0e0e;
+    }
+
+    .suggestions button {
+      background-color: #1a1a1a;
+      color: #ffb300;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: 0.3s;
+    }
+
+    .suggestions button:hover {
+      background-color: #ffb300;
+      color: #0a0a0a;
+    }
+
+    .input-area {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      background-color: #1a1a1a;
+      border-top: 1px solid #222;
+    }
+
+    .input-area input {
+      flex: 1;
+      padding: 10px 14px;
+      border: none;
+      border-radius: 25px;
+      outline: none;
+      background-color: #0e0e0e;
+      color: white;
+      font-size: 14px;
+    }
+
+    .input-area button {
+      background-color: #ffb300;
+      color: #000;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 25px;
+      margin-left: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    .input-area button:hover {
+      background-color: #ffcc33;
+    }
+
+    .footer {
+      background-color: #1a1a1a;
+      text-align: center;
+      padding: 6px;
+      color: #ffb300;
+      font-size: 13px;
+      border-top: 1px solid #222;
+    }
+
+    .footer a {
+      color: #ffb300;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    #ai-warning {
+  display: none;
+  margin-top: 6px;
+  padding: 8px 12px;
+  background-color: #ffb30362; /* Yellow background */
+  color: #ffffff; /* Dark text for contrast */
+  font-size: 13px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-align: center;
+}
+
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <div class="chat-header">
+      <div class="header-center">
+        <img src="freepik1.png" alt="KevinAI Icon" class="ai-icon" />
+        <h2>KevinAI</h2>
+      </div>
+
+      <button class="done-btn" onclick="window.parent.document.getElementById('kevinai-wrapper').style.display='none'">Close</button>
+
+    </div>
+
+    <div id="chat-box">
+      <div class="chat-logo">
+        <img src="freepik1.png" alt="KevinAI Icon" />
+        <h2>KevinAI</h2>
+      </div>
+    </div>
+
+    <div class="suggestions">
+      <button>Creator</button>
+      <button>Python</button>
+      <button>Javascript</button>
+      <button>Rwanda</button>
+      <button>Who are you?</button>
+      <button>what is ai?</button>
+    </div>
+
+    <div class="input-area">
+      <input id="user-input" type="text" placeholder="Ask anything..." />
+      <button id="send-btn">Send</button>
+    </div>
+
+
+<div class="footer">
+  <span id="ai-info-trigger">
+    ℹ️ <a href="#">AI Info</a>
+  </span>
+  <div id="ai-warning">
+    ⚠️ KevinAI can make mistakes. Please verify important information.
+  </div>
+</div>
+
+  
+
+
+<script>
+
+  const knowledge = {
+    hello: "Hello there 👋! I'm KevinAI, your assistant. How can I help you today?",
+    hi: "Hey! 😊 How are you doing?",
+    "what is ai?": "AI stands for Artificial Intelligence — it’s when computers can think or learn like humans 🤖.",
+    "who are you": "I'm KevinAI — a smart assistant created by Kevin, a talented web developer and designer based in Rwanda. I help answer questions, explain concepts, and make learning fun!",
+    "who made you": "I was created by Kevin — a developer passionate about clean UI, smart assistants, and modern web design.",
+    "who is your creator": "Kevin is my creator — he built me to be helpful, stylish, and intelligent!",
+    rwanda: "🇷🇼 Rwanda is a country in East Africa, known as the Land of a Thousand Hills.",
+    "capital of rwanda": "The capital of Rwanda is Kigali 🏙️.",
+    kenya: "🇰🇪 Kenya is an East African country famous for safaris and the Great Rift Valley.",
+    "capital of kenya": "The capital of Kenya is Nairobi 🌇.",
+    python: "🐍 Python is a popular programming language used for web development, data science, AI, and automation.",
+    javascript: "💛 JavaScript is the language of the web — it makes websites interactive and dynamic.",
+    "range function python": "In Python, the range() function generates a sequence of numbers, often used in loops.",
+    "mercury planet": "☿ Mercury is the smallest planet and the closest one to the Sun.",
+    "area of square": "The area of a square is calculated using A = side × side.",
+    "what is energy": "⚡ Energy is the ability to do work — it exists in many forms like heat, motion, or electricity.",
+    kevin: "is aperson who create me brother"
+  };
+
+
+  const sendBtn = document.getElementById("send-btn");
+  const userInput = document.getElementById("user-input");
+
+  function displayMessage(message, sender) {
+    const msgDiv = document.createElement("div");
+    msgDiv.classList.add(sender === "user" ? "user-message" : "bot-message");
+    msgDiv.innerText = message;
+    chatBox.appendChild(msgDiv);
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+
+  function getAIResponse(input) {
+    const lower = input.toLowerCase().trim();
+
+    if (knowledge[lower]) return knowledge[lower];
+
+    if (lower.includes("who are you")) return knowledge["who are you"];
+    if (lower.includes("creator") || lower.includes("developer") || lower.includes("made you"))
+      return knowledge["who made you"];
+
+    if (lower.includes("country"))
+      return "🌍 There are 195 countries in the world! Would you like to know about a specific one?";
+    if (lower.includes("how are you"))
+      return "I'm great 😄, thanks for asking! How about you?";
+    if (lower.includes("your name"))
+      return "My name is KevinAI 🤖 — your smart assistant.";
+
+    const defaults = [
+      "Hmm 🤔, I’m not sure about that yet, but I’ll learn soon!",
+      "That’s interesting! Tell me more.",
+      "I’ll need to look into that — sounds cool!",
+      "Good question! Let’s explore that another time 😄."
+    ];
+    return defaults[Math.floor(Math.random() * defaults.length)];
+  }
+
+  sendBtn.addEventListener("click", () => {
+    const text = userInput.value.trim();
+    if (!text) return;
+    displayMessage(text, "user");
+    userInput.value = "";
+
+    // ✅ Show typing animation
+    const typingDiv = document.createElement("div");
+    typingDiv.classList.add("typing-indicator");
+    typingDiv.innerHTML = `<span></span><span></span><span></span>`;
+    chatBox.appendChild(typingDiv);
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+    // ✅ After 3 seconds, remove typing and show reply
+    setTimeout(() => {
+      typingDiv.remove();
+      const reply = getAIResponse(text);
+      displayMessage(reply, "bot");
+    }, 3000);
+  });
+
+  userInput.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") sendBtn.click();
+  });
+
+  document.querySelector(".done-btn").addEventListener("click", () => {
+    chatBox.innerHTML = '<div class="bot-message">Thanks for chatting! 👋</div>';
+  });
+
+  document.querySelectorAll(".suggestions button").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const text = btn.innerText;
+      displayMessage(text, "user");
+
+      // ✅ Show typing animation for suggestion clicks too
+      const typingDiv = document.createElement("div");
+      typingDiv.classList.add("typing-indicator");
+      typingDiv.innerHTML = `<span></span><span></span><span></span>`;
+      chatBox.appendChild(typingDiv);
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      setTimeout(() => {
+        typingDiv.remove();
+        const reply = getAIResponse(text);
+        displayMessage(reply, "bot");
+      }, 3000);
+    });
+  });
+
+  // ✅ AI Info Warning
+ document.getElementById("ai-info-trigger").addEventListener("click", (e) => {
+  e.preventDefault();
+  const warning = document.getElementById("ai-warning");
+  warning.style.display = "block";
+
+  // Optional: hide after 3 seconds
+  setTimeout(() => {
+    warning.style.display = "none";
+  }, 3000);
+});
+
+
+
+// ✅ Scroll to bottom function
+const chatBox = document.getElementById("chat-box");
+
+function displayMessage(message, sender) {
+  const msgDiv = document.createElement("div");
+  msgDiv.classList.add(sender === "user" ? "user-message" : "bot-message");
+  msgDiv.innerText = message;
+  chatBox.appendChild(msgDiv);
+  chatBox.scrollTop = chatBox.scrollHeight; // ✅ scrolls to bottom
+}
+
+
+</script>
+
+</body>
+</html>
